@@ -85,7 +85,7 @@ class DashboardSelections:
     model: str = "gpt-4.1-mini"
     framework: str = "Custom"
     observability_tool: str = "None"
-    storage_backend: str = "sqlite"
+    storage_backend: str = "json"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "DashboardSelections":
@@ -97,7 +97,7 @@ class DashboardSelections:
             model=text_value(data.get("model"), "gpt-4.1-mini"),
             framework=text_value(data.get("framework"), "Custom"),
             observability_tool=text_value(data.get("observability_tool"), "None"),
-            storage_backend=text_value(data.get("storage_backend"), "sqlite"),
+            storage_backend=text_value(data.get("storage_backend"), "json"),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -309,7 +309,7 @@ class RunRecord:
             model=text_value(data.get("model"), "unknown"),
             framework=text_value(data.get("framework"), "unknown"),
             observability_tool=text_value(data.get("observability_tool"), "None"),
-            storage_backend=text_value(data.get("storage_backend"), "sqlite"),
+            storage_backend=text_value(data.get("storage_backend"), "json"),
             dataset_name=text_value(data.get("dataset_name"), "uploaded file"),
             status=text_value(data.get("status"), "completed"),
             overall_score=optional_float(data.get("overall_score")),
