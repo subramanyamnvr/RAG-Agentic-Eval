@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM and Agentic Evaluation Dashboard</title>
+  <style>
+    :root {
+      --bg: #f7f0e5;
+      --panel: #fffaf2;
+      --panel-strong: #f2e5d2;
+      --ink: #1f2933;
+      --muted: #5f6c78;
+      --accent: #c56c40;
+      --accent-dark: #9b4f2a;
+      --line: #dcc8b2;
+      --success: #2f7a52;
+      --danger: #a64937;
+      --shadow: 0 10px 30px rgba(72, 48, 28, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #fff6e6 0%, transparent 26%),
+        linear-gradient(180deg, #f8f3ea 0%, #f4ecdf 100%);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero,
+    .panel {
+      background: rgba(255, 250, 242, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 28px;
+      margin-bottom: 22px;
+      background: linear-gradient(135deg, #fff8ef 0%, #f1e1cc 100%);
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 12px 0;
+      color: #23333e;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 14px;
+    }
+
+    p {
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff5ea;
+      border: 1px solid var(--line);
+      color: var(--accent-dark);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 12px;
+    }
+
+    .callout {
+      border-left: 5px solid var(--accent);
+      background: rgba(255, 255, 255, 0.72);
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-top: 14px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .panel {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      height: 100%;
+    }
+
+    .card-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #253743;
+    }
+
+    select,
+    input[type="file"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fffaf2;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button,
+    .button-link {
+      border: 1px solid #b65e34;
+      background: var(--accent);
+      color: #fffaf2;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button.secondary,
+    .button-link.secondary {
+      background: #fffaf2;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .steps {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .metric-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .metric-label {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-dark);
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 190px 1fr 70px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 14px;
+      background: #eee2d0;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #e3d1bb;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d1855d 0%, #b65e34 100%);
+      border-radius: 999px;
+    }
+
+    .status-pass {
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .status-fail {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fffaf2;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid #eadac6;
+      vertical-align: top;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: #f7efe3;
+      color: #22323d;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: #fffaf2;
+    }
+
+    details + details {
+      margin-top: 10px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: #253743;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background: #f7efe3;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      overflow-x: auto;
+      color: #24343e;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 980px) {
+      .controls,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="badge">Static GitHub Pages Version</div>
+      <h1>LLM and Agentic Evaluation Dashboard</h1>
+      <p class="muted">
+        This is a browser-only version of the project so you can host it on GitHub Pages.
+        It explains the core ideas, lets users download sample datasets, upload edited JSON or CSV files,
+        and runs simple evaluation directly in the browser.
+      </p>
+      <div class="callout">
+        No API keys are required here. The page evaluates answers already present in the uploaded dataset,
+        which makes it easy to learn the concepts before wiring up live models.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Start Here</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-kicker">Step 1</div>
+          <strong>Choose a system type</strong>
+          <p>Pick <strong>LLM</strong>, <strong>RAG</strong>, or <strong>Agentic</strong> based on what you want to understand.</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">Step 2</div>
+          <strong>Download the sample dataset</strong>
+          <p>Use the sample first. It is the fastest way to understand what each metric is trying to measure.</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">Step 3</div>
+          <strong>Edit and upload</strong>
+          <p>Change the answers, context, or steps in the sample file, upload it back, and see how the metrics move.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Choose What To Evaluate</h2>
+      <div class="controls">
+        <div class="field">
+          <label for="applicationType">Application type</label>
+          <select id="applicationType">
+            <option value="LLM">LLM</option>
+            <option value="RAG" selected>RAG</option>
+            <option value="Agentic">Agentic</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="primaryConcern">Primary concern</label>
+          <select id="primaryConcern">
+            <option>Answer Quality</option>
+            <option>Retrieval Quality</option>
+            <option>Tool Use</option>
+            <option>Safety</option>
+            <option>Latency and Cost</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="providerName">Model provider</label>
+          <select id="providerName">
+            <option>OpenAI</option>
+            <option>Anthropic</option>
+            <option>Gemini</option>
+            <option>Ollama</option>
+            <option>OpenRouter</option>
+            <option>Custom</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="modelName">Model name</label>
+          <select id="modelName">
+            <option>gpt-4.1-mini</option>
+            <option>gpt-4.1</option>
+            <option>gpt-4o-mini</option>
+            <option>claude-3-7-sonnet</option>
+            <option>gemini-2.5-pro</option>
+            <option>llama3</option>
+          </select>
+        </div>
+      </div>
+      <div class="buttons">
+        <button id="downloadJsonButton" type="button">Download sample JSON</button>
+        <button id="downloadCsvButton" type="button" class="secondary">Download sample CSV</button>
+      </div>
+      <div class="field" style="margin-top: 16px;">
+        <label for="datasetFile">Upload your edited JSON or CSV file</label>
+        <input id="datasetFile" type="file" accept=".json,.csv">
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>In Plain English</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-kicker">What it is</div>
+          <p id="plainWhatItIs"></p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">What can go wrong</div>
+          <p id="plainWhatCanGoWrong"></p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">What to measure first</div>
+          <p id="plainWhatToMeasure"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>How to Read the Metrics</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-kicker">Metric bars</div>
+          <p>The bars below show the average score across all uploaded rows. They are not the score for one answer only. If one row is weak, the average can drop.</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">Why scores change</div>
+          <p id="metricChangeExplanation"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Run Evaluation</h2>
+      <p class="small">If no file is uploaded, the page will use the built-in sample dataset for the selected application type.</p>
+      <div class="buttons">
+        <button id="evaluateButton" type="button">Run evaluation</button>
+      </div>
+      <div id="datasetInfo" class="callout hidden" style="margin-top: 14px;"></div>
+    </section>
+
+    <section id="resultsSection" class="panel hidden">
+      <h2>Evaluation Results</h2>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Rows</div>
+          <div class="metric-value" id="rowsValue">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Pass rate</div>
+          <div class="metric-value" id="passRateValue">0%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Overall score</div>
+          <div class="metric-value" id="overallScoreValue">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Average latency</div>
+          <div class="metric-value" id="latencyValue">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Average cost</div>
+          <div class="metric-value" id="costValue">0</div>
+        </div>
+      </div>
+
+      <div class="bars" id="metricBars"></div>
+
+      <details style="margin-top: 18px;" open>
+        <summary>What the metrics mean</summary>
+        <div id="metricExplanations" class="small" style="margin-top: 12px;"></div>
+      </details>
+
+      <details style="margin-top: 12px;">
+        <summary>Row-level results</summary>
+        <div class="table-wrap">
+          <table id="rowResultsTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+
+      <details style="margin-top: 12px;">
+        <summary>Recent browser history</summary>
+        <div class="table-wrap">
+          <table id="historyTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel">
+      <h2>How Answers Are Represented In This Demo</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-kicker">LLM</div>
+          <p><strong>User question -> model -> answer</strong></p>
+          <p>The answer is already stored in the dataset as <code>actual_answer</code>.</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">RAG</div>
+          <p><strong>User question -> retriever -> context -> model -> answer</strong></p>
+          <p>The retrieved chunks are stored in <code>retrieved_contexts</code>.</p>
+        </div>
+        <div class="card">
+          <div class="card-kicker">Agentic</div>
+          <p><strong>Task -> planner -> tools -> model -> final result</strong></p>
+          <p>The workflow trace is stored in <code>steps</code>.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const SAMPLE_PATHS = {
+      LLM: "sample_data/llm_eval.json",
+      RAG: "sample_data/rag_eval.json",
+      Agentic: "sample_data/agent_eval.json"
+    };
+
+    const METRIC_EXPLANATIONS = {
+      correctness: "How closely the generated answer matches the expected answer.",
+      relevancy: "Whether the answer actually addresses the user question.",
+      completeness: "How much of the expected answer seems to be covered.",
+      faithfulness: "Whether the answer stays grounded in the retrieved context.",
+      groundedness: "How much of the answer can be traced back to the source context.",
+      context_precision: "How useful the retrieved context chunks were for producing the answer.",
+      context_recall: "How much of the important expected information was present in the context.",
+      task_success: "How closely the final agent result matches the expected result.",
+      tool_selection_accuracy: "Whether the agent chose the tools it was expected to use.",
+      tool_precision: "Whether the tools the agent used were actually appropriate.",
+      step_efficiency: "Whether the agent used a reasonable number of steps.",
+      tool_failure_rate: "How often tool usage failed during the run.",
+      loop_risk: "Whether the agent repeated actions in a way that suggests it got stuck."
+    };
+
+    let uploadedRows = null;
+    let uploadedFileName = null;
+
+    const applicationTypeSelect = document.getElementById("applicationType");
+    const datasetFileInput = document.getElementById("datasetFile");
+    const evaluateButton = document.getElementById("evaluateButton");
+    const downloadJsonButton = document.getElementById("downloadJsonButton");
+    const downloadCsvButton = document.getElementById("downloadCsvButton");
+
+    applicationTypeSelect.addEventListener("change", () => {
+      updatePlainEnglish();
+      uploadedRows = null;
+      uploadedFileName = null;
+      datasetFileInput.value = "";
+      hideResults();
+    });
+
+    datasetFileInput.addEventListener("change", handleFileUpload);
+    evaluateButton.addEventListener("click", runEvaluation);
+    downloadJsonButton.addEventListener("click", downloadSampleJson);
+    downloadCsvButton.addEventListener("click", downloadSampleCsv);
+
+    updatePlainEnglish();
+    renderHistoryTable();
+
+    function updatePlainEnglish() {
+      const type = applicationTypeSelect.value;
+      const plainEnglish = {
+        LLM: {
+          whatItIs: "A plain LLM app answers directly from the model.",
+          whatCanGoWrong: "The answer may be off-topic, incomplete, or simply wrong.",
+          whatToMeasure: "Start with correctness, relevancy, and completeness.",
+          metricChange: "If questions become more open-ended, correctness can fall even when relevancy stays decent. Small datasets also make averages swing more."
+        },
+        RAG: {
+          whatItIs: "A RAG app first retrieves documents, then uses them to answer.",
+          whatCanGoWrong: "The system may retrieve noisy context or answer with claims the context does not support.",
+          whatToMeasure: "Start with faithfulness, context precision, and context recall.",
+          metricChange: "If retrieval gets noisy, context precision drops. If the right document never appears, context recall drops first and faithfulness often suffers after that."
+        },
+        Agentic: {
+          whatItIs: "An agentic app can plan, use tools, and produce a final result.",
+          whatCanGoWrong: "It may choose the wrong tool, repeat steps, or fail to finish the task cleanly.",
+          whatToMeasure: "Start with task success, tool selection accuracy, and step efficiency.",
+          metricChange: "Task success can stay high while step efficiency falls. If the agent retries a lot or uses the wrong tool first, the workflow metrics reveal it."
+        }
+      };
+
+      document.getElementById("plainWhatItIs").textContent = plainEnglish[type].whatItIs;
+      document.getElementById("plainWhatCanGoWrong").textContent = plainEnglish[type].whatCanGoWrong;
+      document.getElementById("plainWhatToMeasure").textContent = plainEnglish[type].whatToMeasure;
+      document.getElementById("metricChangeExplanation").textContent = plainEnglish[type].metricChange;
+    }
+
+    async function loadSampleRows(type) {
+      const response = await fetch(SAMPLE_PATHS[type]);
+      return await response.json();
+    }
+
+    async function downloadSampleJson() {
+      const type = applicationTypeSelect.value;
+      const rows = await loadSampleRows(type);
+      downloadBlob(
+        JSON.stringify(rows, null, 2),
+        `${type.toLowerCase()}_sample.json`,
+        "application/json"
+      );
+    }
+
+    async function downloadSampleCsv() {
+      const type = applicationTypeSelect.value;
+      const rows = await loadSampleRows(type);
+      downloadBlob(
+        rowsToCsv(rows),
+        `${type.toLowerCase()}_sample.csv`,
+        "text/csv"
+      );
+    }
+
+    function downloadBlob(content, fileName, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function rowsToCsv(rows) {
+      if (!rows.length) {
+        return "";
+      }
+
+      const columns = [];
+      const normalized = rows.map(row => {
+        const nextRow = {};
+        Object.entries(row).forEach(([key, value]) => {
+          if (!columns.includes(key)) {
+            columns.push(key);
+          }
+          nextRow[key] = typeof value === "object" ? JSON.stringify(value) : value;
+        });
+        return nextRow;
+      });
+
+      const csvLines = [];
+      csvLines.push(columns.join(","));
+      normalized.forEach(row => {
+        const values = columns.map(column => escapeCsvValue(row[column] ?? ""));
+        csvLines.push(values.join(","));
+      });
+      return csvLines.join("\n");
+    }
+
+    function escapeCsvValue(value) {
+      const text = String(value);
+      if (text.includes(",") || text.includes('"') || text.includes("\n")) {
+        return `"${text.replace(/"/g, '""')}"`;
+      }
+      return text;
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        uploadedRows = null;
+        uploadedFileName = null;
+        return;
+      }
+
+      uploadedFileName = file.name;
+      const text = await file.text();
+
+      if (file.name.toLowerCase().endsWith(".json")) {
+        const parsed = JSON.parse(text);
+        uploadedRows = Array.isArray(parsed) ? parsed : [parsed];
+        return;
+      }
+
+      uploadedRows = parseCsv(text);
+    }
+
+    function parseCsv(text) {
+      const lines = [];
+      let current = "";
+      let row = [];
+      let inQuotes = false;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const character = text[index];
+        const next = text[index + 1];
+
+        if (character === '"' && inQuotes && next === '"') {
+          current += '"';
+          index += 1;
+          continue;
+        }
+
+        if (character === '"') {
+          inQuotes = !inQuotes;
+          continue;
+        }
+
+        if (character === "," && !inQuotes) {
+          row.push(current);
+          current = "";
+          continue;
+        }
+
+        if ((character === "\n" || character === "\r") && !inQuotes) {
+          if (character === "\r" && next === "\n") {
+            index += 1;
+          }
+          row.push(current);
+          lines.push(row);
+          row = [];
+          current = "";
+          continue;
+        }
+
+        current += character;
+      }
+
+      if (current.length || row.length) {
+        row.push(current);
+        lines.push(row);
+      }
+
+      if (!lines.length) {
+        return [];
+      }
+
+      const headers = lines[0];
+      return lines.slice(1).filter(line => line.some(value => value.trim() !== "")).map(values => {
+        const item = {};
+        headers.forEach((header, index) => {
+          item[header] = values[index] ?? "";
+        });
+        return item;
+      });
+    }
+
+    async function runEvaluation() {
+      const type = applicationTypeSelect.value;
+      const rows = uploadedRows || await loadSampleRows(type);
+      const datasetName = uploadedFileName || `${type.toLowerCase()}_sample.json`;
+
+      const parsedRows = rows.map(row => parseRowByType(type, row));
+      const result = evaluateRows(type, parsedRows);
+
+      document.getElementById("datasetInfo").classList.remove("hidden");
+      document.getElementById("datasetInfo").textContent = `Evaluated ${parsedRows.length} rows from ${datasetName}.`;
+      document.getElementById("resultsSection").classList.remove("hidden");
+
+      renderSummary(result.summary);
+      renderMetricBars(result.summary.metrics);
+      renderMetricExplanations(result.metricExplanations);
+      renderRowResults(result.rowResults);
+      saveHistory(type, datasetName, result.summary);
+      renderHistoryTable();
+    }
+
+    function parseRowByType(type, row) {
+      if (type === "LLM") {
+        return {
+          question: textValue(row.question),
+          expected_answer: textValue(row.expected_answer),
+          actual_answer: textValue(row.actual_answer),
+          latency_ms: numberValue(row.latency_ms),
+          input_tokens: intValue(row.input_tokens),
+          output_tokens: intValue(row.output_tokens)
+        };
+      }
+
+      if (type === "RAG") {
+        return {
+          question: textValue(row.question),
+          retrieved_contexts: listValue(row.retrieved_contexts),
+          expected_answer: textValue(row.expected_answer),
+          actual_answer: textValue(row.actual_answer),
+          latency_ms: numberValue(row.latency_ms),
+          input_tokens: intValue(row.input_tokens),
+          output_tokens: intValue(row.output_tokens)
+        };
+      }
+
+      return {
+        task: textValue(row.task),
+        expected_result: textValue(row.expected_result),
+        final_result: textValue(row.final_result),
+        tools_expected: listValue(row.tools_expected),
+        tools_used: listValue(row.tools_used),
+        steps: listOfObjects(row.steps),
+        retry_count: intValue(row.retry_count) || 0,
+        tool_errors: intValue(row.tool_errors) || 0,
+        total_latency_ms: numberValue(row.total_latency_ms),
+        input_tokens: intValue(row.input_tokens),
+        output_tokens: intValue(row.output_tokens)
+      };
+    }
+
+    function textValue(value) {
+      return value == null ? "" : String(value);
+    }
+
+    function numberValue(value) {
+      if (value === "" || value == null) {
+        return null;
+      }
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? null : parsed;
+    }
+
+    function intValue(value) {
+      if (value === "" || value == null) {
+        return null;
+      }
+      const parsed = parseInt(value, 10);
+      return Number.isNaN(parsed) ? null : parsed;
+    }
+
+    function listValue(value) {
+      if (Array.isArray(value)) {
+        return value.map(item => String(item));
+      }
+      if (value == null || value === "") {
+        return [];
+      }
+      const text = String(value).trim();
+      if (text.startsWith("[")) {
+        try {
+          const parsed = JSON.parse(text);
+          if (Array.isArray(parsed)) {
+            return parsed.map(item => String(item));
+          }
+        } catch (error) {}
+      }
+      if (text.includes(",")) {
+        return text.split(",").map(item => item.trim()).filter(Boolean);
+      }
+      return [text];
+    }
+
+    function listOfObjects(value) {
+      if (Array.isArray(value)) {
+        return value;
+      }
+      if (value == null || value === "") {
+        return [];
+      }
+      try {
+        const parsed = JSON.parse(String(value));
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function normalizeText(text) {
+      return String(text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function uniqueWords(text) {
+      const normalized = normalizeText(text);
+      return new Set(normalized ? normalized.split(" ") : []);
+    }
+
+    function overlapRatio(referenceWords, candidateWords) {
+      if (!referenceWords.size) {
+        return 0;
+      }
+      let matches = 0;
+      referenceWords.forEach(word => {
+        if (candidateWords.has(word)) {
+          matches += 1;
+        }
+      });
+      return clampScore(matches / referenceWords.size);
+    }
+
+    function jaccardSimilarity(firstWords, secondWords) {
+      const union = new Set([...firstWords, ...secondWords]);
+      if (!union.size) {
+        return 0;
+      }
+      let intersection = 0;
+      firstWords.forEach(word => {
+        if (secondWords.has(word)) {
+          intersection += 1;
+        }
+      });
+      return clampScore(intersection / union.size);
+    }
+
+    function clampScore(value) {
+      const clipped = Math.max(0, Math.min(1, value));
+      return Number(clipped.toFixed(4));
+    }
+
+    function average(values) {
+      if (!values.length) {
+        return null;
+      }
+      const total = values.reduce((sum, value) => sum + value, 0);
+      return Number((total / values.length).toFixed(4));
+    }
+
+    function estimateCost(inputTokens, outputTokens) {
+      const inputCost = (inputTokens || 0) * 0.000001;
+      const outputCost = (outputTokens || 0) * 0.000002;
+      return Number((inputCost + outputCost).toFixed(6));
+    }
+
+    function evaluateRows(type, rows) {
+      if (type === "LLM") {
+        return evaluateLlmRows(rows);
+      }
+      if (type === "RAG") {
+        return evaluateRagRows(rows);
+      }
+      return evaluateAgentRows(rows);
+    }
+
+    function evaluateLlmRows(rows) {
+      const rowResults = rows.map(row => {
+        const expectedWords = uniqueWords(row.expected_answer);
+        const actualWords = uniqueWords(row.actual_answer);
+        const questionWords = uniqueWords(row.question);
+
+        const correctness = overlapRatio(expectedWords, actualWords);
+        const relevancy = overlapRatio(questionWords, actualWords);
+        const completeness = jaccardSimilarity(expectedWords, actualWords);
+        const overallScore = average([correctness, relevancy, completeness]) || 0;
+
+        return {
+          question: row.question,
+          expected_answer: row.expected_answer,
+          actual_answer: row.actual_answer,
+          latency_ms: row.latency_ms,
+          input_tokens: row.input_tokens,
+          output_tokens: row.output_tokens,
+          estimated_cost: estimateCost(row.input_tokens, row.output_tokens),
+          status: overallScore >= 0.7 ? "pass" : "fail",
+          metrics: {
+            correctness,
+            relevancy,
+            completeness,
+            overall_score: overallScore
+          }
+        };
+      });
+
+      return buildResult("LLM", rowResults, ["correctness", "relevancy", "completeness", "overall_score"]);
+    }
+
+    function evaluateRagRows(rows) {
+      const rowResults = rows.map(row => {
+        const contextText = row.retrieved_contexts.join(" ");
+        const answerWords = uniqueWords(row.actual_answer);
+        const expectedWords = uniqueWords(row.expected_answer);
+        const contextWords = uniqueWords(contextText);
+
+        const faithfulness = overlapRatio(answerWords, contextWords);
+        const groundedness = jaccardSimilarity(answerWords, contextWords);
+        const contextPrecision = calculateContextPrecision(row.retrieved_contexts, row.actual_answer);
+        const contextRecall = overlapRatio(expectedWords, contextWords);
+        const overallScore = average([faithfulness, groundedness, contextPrecision, contextRecall]) || 0;
+
+        return {
+          question: row.question,
+          expected_answer: row.expected_answer,
+          actual_answer: row.actual_answer,
+          latency_ms: row.latency_ms,
+          input_tokens: row.input_tokens,
+          output_tokens: row.output_tokens,
+          estimated_cost: estimateCost(row.input_tokens, row.output_tokens),
+          status: overallScore >= 0.7 ? "pass" : "fail",
+          metrics: {
+            faithfulness,
+            groundedness,
+            context_precision: contextPrecision,
+            context_recall: contextRecall,
+            overall_score: overallScore
+          }
+        };
+      });
+
+      return buildResult("RAG", rowResults, ["faithfulness", "groundedness", "context_precision", "context_recall", "overall_score"]);
+    }
+
+    function evaluateAgentRows(rows) {
+      const rowResults = rows.map(row => {
+        const expectedWords = uniqueWords(row.expected_result);
+        const finalWords = uniqueWords(row.final_result);
+        const expectedTools = new Set(row.tools_expected.map(item => normalizeText(item)).filter(Boolean));
+        const usedTools = new Set(row.tools_used.map(item => normalizeText(item)).filter(Boolean));
+
+        const taskSuccess = overlapRatio(expectedWords, finalWords);
+        const toolSelectionAccuracy = expectedTools.size ? overlapRatio(expectedTools, usedTools) : 1;
+        const toolPrecision = usedTools.size ? overlapRatio(usedTools, expectedTools) : 1;
+        const stepEfficiency = calculateStepEfficiency(row.steps, expectedTools.size);
+        const toolFailureRate = calculateToolFailureRate(row.tool_errors, row.tools_used.length);
+        const loopRisk = calculateLoopRisk(row.steps);
+        const overallScore = average([
+          taskSuccess,
+          toolSelectionAccuracy,
+          toolPrecision,
+          stepEfficiency,
+          clampScore(1 - toolFailureRate),
+          clampScore(1 - loopRisk)
+        ]) || 0;
+
+        const totalLatency = row.total_latency_ms ?? sumStepLatencies(row.steps);
+
+        return {
+          task: row.task,
+          expected_result: row.expected_result,
+          final_result: row.final_result,
+          latency_ms: totalLatency,
+          input_tokens: row.input_tokens,
+          output_tokens: row.output_tokens,
+          estimated_cost: estimateCost(row.input_tokens, row.output_tokens),
+          status: overallScore >= 0.7 ? "pass" : "fail",
+          metrics: {
+            task_success: taskSuccess,
+            tool_selection_accuracy: toolSelectionAccuracy,
+            tool_precision: toolPrecision,
+            step_efficiency: stepEfficiency,
+            tool_failure_rate: toolFailureRate,
+            loop_risk: loopRisk,
+            overall_score: overallScore
+          }
+        };
+      });
+
+      return buildResult("Agentic", rowResults, ["task_success", "tool_selection_accuracy", "tool_precision", "step_efficiency", "overall_score"]);
+    }
+
+    function calculateContextPrecision(contexts, answer) {
+      if (!contexts.length) {
+        return 0;
+      }
+      const answerWords = uniqueWords(answer);
+      let usefulChunks = 0;
+      contexts.forEach(context => {
+        const contextWords = uniqueWords(context);
+        let overlaps = false;
+        answerWords.forEach(word => {
+          if (contextWords.has(word)) {
+            overlaps = true;
+          }
+        });
+        if (overlaps) {
+          usefulChunks += 1;
+        }
+      });
+      return clampScore(usefulChunks / contexts.length);
+    }
+
+    function calculateStepEfficiency(steps, expectedToolCount) {
+      const count = steps.length;
+      if (!count) {
+        return 0;
+      }
+      const ideal = Math.max(1, expectedToolCount + 1);
+      if (count <= ideal) {
+        return 1;
+      }
+      return clampScore(1 - ((count - ideal) / count));
+    }
+
+    function calculateToolFailureRate(toolErrors, toolCount) {
+      if (!toolCount) {
+        return 0;
+      }
+      return clampScore(toolErrors / toolCount);
+    }
+
+    function calculateLoopRisk(steps) {
+      if (!steps.length) {
+        return 0;
+      }
+      let repeated = 0;
+      let previous = null;
+      steps.forEach(step => {
+        const current = `${normalizeText(step.action)}|${normalizeText(step.tool_name)}`;
+        if (current === previous) {
+          repeated += 1;
+        }
+        previous = current;
+      });
+      return clampScore(repeated / steps.length);
+    }
+
+    function sumStepLatencies(steps) {
+      return steps.reduce((sum, step) => sum + (Number(step.latency_ms) || 0), 0) || null;
+    }
+
+    function buildResult(type, rowResults, metricNames) {
+      const summaryMetrics = {};
+      metricNames.forEach(metricName => {
+        const values = rowResults.map(row => row.metrics[metricName]).filter(value => typeof value === "number");
+        summaryMetrics[metricName] = average(values);
+      });
+
+      const latencies = rowResults.map(row => row.latency_ms).filter(value => typeof value === "number");
+      const costs = rowResults.map(row => row.estimated_cost).filter(value => typeof value === "number");
+      const passed = rowResults.filter(row => row.status === "pass");
+
+      return {
+        evaluationType: type,
+        rowResults,
+        summary: {
+          total_rows: rowResults.length,
+          passed_rows: passed.length,
+          failed_rows: rowResults.length - passed.length,
+          average_latency_ms: average(latencies),
+          average_cost: average(costs),
+          metrics: summaryMetrics
+        },
+        metricExplanations: METRIC_EXPLANATIONS
+      };
+    }
+
+    function renderSummary(summary) {
+      const passRate = summary.total_rows ? ((summary.passed_rows / summary.total_rows) * 100).toFixed(2) : "0.00";
+      document.getElementById("rowsValue").textContent = String(summary.total_rows);
+      document.getElementById("passRateValue").textContent = `${passRate}%`;
+      document.getElementById("overallScoreValue").textContent = formatNumber(summary.metrics.overall_score);
+      document.getElementById("latencyValue").textContent = summary.average_latency_ms == null ? "N/A" : `${formatNumber(summary.average_latency_ms)} ms`;
+      document.getElementById("costValue").textContent = summary.average_cost == null ? "N/A" : `$${formatNumber(summary.average_cost, 6)}`;
+    }
+
+    function renderMetricBars(metrics) {
+      const container = document.getElementById("metricBars");
+      container.innerHTML = "";
+
+      Object.entries(metrics).forEach(([name, value]) => {
+        if (typeof value !== "number") {
+          return;
+        }
+
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
+          <div>${name}</div>
+          <div class="bar-track"><div class="bar-fill" style="width: ${Math.max(0, Math.min(100, value * 100))}%"></div></div>
+          <div>${value.toFixed(4)}</div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderMetricExplanations(explanations) {
+      const container = document.getElementById("metricExplanations");
+      container.innerHTML = "";
+      Object.entries(explanations).forEach(([name, description]) => {
+        const paragraph = document.createElement("p");
+        paragraph.innerHTML = `<strong>${name}</strong>: ${description}`;
+        container.appendChild(paragraph);
+      });
+    }
+
+    function renderRowResults(rowResults) {
+      const table = document.getElementById("rowResultsTable");
+      const thead = table.querySelector("thead");
+      const tbody = table.querySelector("tbody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      if (!rowResults.length) {
+        return;
+      }
+
+      const first = rowResults[0];
+      const metricNames = Object.keys(first.metrics);
+      const headers = ["status", ...Object.keys(first).filter(key => !["metrics"].includes(key)), ...metricNames];
+
+      const headerRow = document.createElement("tr");
+      headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+
+      rowResults.forEach(result => {
+        const tr = document.createElement("tr");
+        headers.forEach(header => {
+          const td = document.createElement("td");
+          if (header === "status") {
+            td.innerHTML = `<span class="${result.status === "pass" ? "status-pass" : "status-fail"}">${result.status}</span>`;
+          } else if (header in result.metrics) {
+            td.textContent = formatNumber(result.metrics[header]);
+          } else {
+            const value = result[header];
+            td.textContent = typeof value === "object" ? JSON.stringify(value) : String(value ?? "");
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveHistory(type, datasetName, summary) {
+      const history = JSON.parse(localStorage.getItem("llmEvalHistory") || "[]");
+      history.unshift({
+        created_at: new Date().toISOString(),
+        application_type: type,
+        dataset_name: datasetName,
+        overall_score: summary.metrics.overall_score,
+        average_latency_ms: summary.average_latency_ms,
+        average_cost: summary.average_cost,
+        pass_rate: summary.total_rows ? (summary.passed_rows / summary.total_rows) * 100 : 0
+      });
+      localStorage.setItem("llmEvalHistory", JSON.stringify(history.slice(0, 12)));
+    }
+
+    function renderHistoryTable() {
+      const table = document.getElementById("historyTable");
+      const thead = table.querySelector("thead");
+      const tbody = table.querySelector("tbody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      const history = JSON.parse(localStorage.getItem("llmEvalHistory") || "[]");
+      const headers = ["created_at", "application_type", "dataset_name", "overall_score", "average_latency_ms", "average_cost", "pass_rate"];
+
+      const headerRow = document.createElement("tr");
+      headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+
+      history.forEach(item => {
+        const tr = document.createElement("tr");
+        headers.forEach(header => {
+          const td = document.createElement("td");
+          const value = item[header];
+          if (header === "created_at") {
+            td.textContent = new Date(value).toLocaleString();
+          } else if (typeof value === "number") {
+            td.textContent = formatNumber(value);
+          } else {
+            td.textContent = String(value ?? "");
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function formatNumber(value, digits = 4) {
+      if (value == null || Number.isNaN(value)) {
+        return "N/A";
+      }
+      return Number(value).toFixed(digits).replace(/\.?0+$/, "");
+    }
+
+    function hideResults() {
+      document.getElementById("resultsSection").classList.add("hidden");
+      document.getElementById("datasetInfo").classList.add("hidden");
+    }
+  </script>
+</body>
+</html>

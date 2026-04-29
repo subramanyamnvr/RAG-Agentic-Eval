@@ -1,0 +1,50 @@
+[
+  {
+    "question": "Who wrote Hamlet?",
+    "retrieved_contexts": [
+      "Hamlet is a tragedy written by William Shakespeare sometime between 1599 and 1601.",
+      "It is one of Shakespeare's most famous plays."
+    ],
+    "expected_answer": "William Shakespeare wrote Hamlet.",
+    "actual_answer": "Hamlet was written by William Shakespeare.",
+    "model": "gpt-4.1-mini",
+    "latency_ms": 1120,
+    "input_tokens": 32,
+    "output_tokens": 15,
+    "metadata": {
+      "topic": "literature"
+    }
+  },
+  {
+    "question": "What is photosynthesis?",
+    "retrieved_contexts": [
+      "Photosynthesis is the process by which green plants use sunlight to make food from carbon dioxide and water.",
+      "The process usually releases oxygen as a byproduct."
+    ],
+    "expected_answer": "Photosynthesis is the process plants use to make food using sunlight.",
+    "actual_answer": "Photosynthesis is the process plants use sunlight to make food.",
+    "model": "gpt-4.1-mini",
+    "latency_ms": 1290,
+    "input_tokens": 38,
+    "output_tokens": 17,
+    "metadata": {
+      "topic": "science"
+    }
+  },
+  {
+    "question": "What is the largest planet in the solar system?",
+    "retrieved_contexts": [
+      "Jupiter is the largest planet in the solar system.",
+      "It is a gas giant and has many moons."
+    ],
+    "expected_answer": "Jupiter is the largest planet in the solar system.",
+    "actual_answer": "Jupiter is the largest planet in our solar system.",
+    "model": "gpt-4.1-mini",
+    "latency_ms": 980,
+    "input_tokens": 30,
+    "output_tokens": 14,
+    "metadata": {
+      "topic": "astronomy"
+    }
+  }
+]
