@@ -1,0 +1,56 @@
+name: Evaluation Smoke Test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run evaluation smoke test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from core.integrations import IntegrationService
+          from core.schemas import DashboardSelections
+
+          service = IntegrationService()
+
+          sample_files = {
+              "LLM": Path("sample_data/llm_eval.json"),
+              "RAG": Path("sample_data/rag_eval.json"),
+              "Agentic": Path("sample_data/agent_eval.json"),
+          }
+
+          for application_type, file_path in sample_files.items():
+              selections = DashboardSelections(
+                  application_type=application_type,
+                  provider="OpenAI",
+                  model="demo-model",
+                  framework="Custom",
+                  observability_tool="None",
+                  storage_backend="json",
+                  evaluation_tools=["RAGAS", "DeepEval"],
+              )
+
+              result = service.evaluate_file(file_path, selections)
+              summary = result["evaluation_result"]["summary"]
+              assert summary["total_rows"] > 0
+
+          print("Smoke test passed.")
+          PY

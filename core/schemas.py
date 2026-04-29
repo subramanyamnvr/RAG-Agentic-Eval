@@ -14,6 +14,7 @@ helps new learners understand what each part of the application expects.
 
 from __future__ import annotations
 
+import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -57,6 +58,13 @@ def dict_value(value: Any) -> dict[str, Any]:
         return {}
     if isinstance(value, dict):
         return value
+    if isinstance(value, str):
+        cleaned = value.strip()
+        if not cleaned:
+            return {}
+        parsed = json.loads(cleaned)
+        if isinstance(parsed, dict):
+            return parsed
     raise ValueError("Expected a dictionary value.")
 
 
@@ -73,7 +81,38 @@ def string_list(value: Any) -> list[str]:
         return []
     if isinstance(value, list):
         return [str(item) for item in value]
+    if isinstance(value, str):
+        cleaned = value.strip()
+        if not cleaned:
+            return []
+        if cleaned.startswith("["):
+            parsed = json.loads(cleaned)
+            if isinstance(parsed, list):
+                return [str(item) for item in parsed]
+        if "," in cleaned:
+            return [item.strip() for item in cleaned.split(",") if item.strip()]
     return [str(value)]
+
+
+def list_of_dicts(value: Any) -> list[dict[str, Any]]:
+    """Return a list of dictionaries.
+
+    This is helpful for agent step data because JSON uploads may contain a real
+    list, while CSV uploads may contain the same list encoded as a JSON string.
+    """
+
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, dict)]
+    if isinstance(value, str):
+        cleaned = value.strip()
+        if not cleaned:
+            return []
+        parsed = json.loads(cleaned)
+        if isinstance(parsed, list):
+            return [item for item in parsed if isinstance(item, dict)]
+    raise ValueError("Expected a list of dictionaries.")
 
 
 @dataclass
@@ -81,11 +120,15 @@ class DashboardSelections:
     """Values chosen by the user at the top of the dashboard."""
 
     application_type: str = "LLM"
+    evaluation_layer: str = "RAG"
+    primary_concern: str = "Answer Quality"
+    deployment_stage: str = "Production"
     provider: str = "OpenAI"
     model: str = "gpt-4.1-mini"
     framework: str = "Custom"
     observability_tool: str = "None"
     storage_backend: str = "json"
+    evaluation_tools: list[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "DashboardSelections":
@@ -93,11 +136,15 @@ class DashboardSelections:
 
         return cls(
             application_type=text_value(data.get("application_type"), "LLM"),
+            evaluation_layer=text_value(data.get("evaluation_layer"), "RAG"),
+            primary_concern=text_value(data.get("primary_concern"), "Answer Quality"),
+            deployment_stage=text_value(data.get("deployment_stage"), "Production"),
             provider=text_value(data.get("provider"), "OpenAI"),
             model=text_value(data.get("model"), "gpt-4.1-mini"),
             framework=text_value(data.get("framework"), "Custom"),
             observability_tool=text_value(data.get("observability_tool"), "None"),
             storage_backend=text_value(data.get("storage_backend"), "json"),
+            evaluation_tools=string_list(data.get("evaluation_tools")),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -234,7 +281,7 @@ class AgentEvaluationRow:
     def from_dict(cls, data: dict[str, Any]) -> "AgentEvaluationRow":
         """Build an agent evaluation row from uploaded data."""
 
-        raw_steps = data.get("steps") or []
+        raw_steps = list_of_dicts(data.get("steps"))
         parsed_steps = [AgentStep.from_dict(step) for step in raw_steps]
 
         return cls(

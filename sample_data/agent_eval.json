@@ -1,1 +1,125 @@
-
+[
+  {
+    "task": "Look up the weather and summarize it for the user.",
+    "expected_result": "Return the weather details and a short summary.",
+    "final_result": "Returned the weather details and a short summary.",
+    "tools_expected": ["weather_api"],
+    "tools_used": ["weather_api"],
+    "steps": [
+      {
+        "step_number": 1,
+        "action": "plan",
+        "status": "completed",
+        "latency_ms": 120
+      },
+      {
+        "step_number": 2,
+        "action": "call tool",
+        "tool_name": "weather_api",
+        "tool_input": "Bengaluru weather",
+        "tool_output": "24C and cloudy",
+        "status": "completed",
+        "latency_ms": 310
+      },
+      {
+        "step_number": 3,
+        "action": "respond",
+        "status": "completed",
+        "latency_ms": 180
+      }
+    ],
+    "retry_count": 0,
+    "tool_errors": 0,
+    "total_latency_ms": 610,
+    "input_tokens": 44,
+    "output_tokens": 21,
+    "metadata": {
+      "category": "tool-use"
+    }
+  },
+  {
+    "task": "Find a stock price and summarize the trend.",
+    "expected_result": "Return the stock price and a short trend summary.",
+    "final_result": "Returned the stock price with a short trend summary.",
+    "tools_expected": ["stock_api"],
+    "tools_used": ["stock_api"],
+    "steps": [
+      {
+        "step_number": 1,
+        "action": "plan",
+        "status": "completed",
+        "latency_ms": 150
+      },
+      {
+        "step_number": 2,
+        "action": "call tool",
+        "tool_name": "stock_api",
+        "tool_input": "AAPL",
+        "tool_output": "AAPL 192.30",
+        "status": "completed",
+        "latency_ms": 340
+      },
+      {
+        "step_number": 3,
+        "action": "respond",
+        "status": "completed",
+        "latency_ms": 210
+      }
+    ],
+    "retry_count": 0,
+    "tool_errors": 0,
+    "total_latency_ms": 700,
+    "input_tokens": 48,
+    "output_tokens": 22,
+    "metadata": {
+      "category": "finance"
+    }
+  },
+  {
+    "task": "Search a policy document and answer a question.",
+    "expected_result": "Use the search tool and return the relevant policy answer.",
+    "final_result": "Returned the relevant policy answer after using the search tool.",
+    "tools_expected": ["document_search"],
+    "tools_used": ["document_search", "document_search"],
+    "steps": [
+      {
+        "step_number": 1,
+        "action": "plan",
+        "status": "completed",
+        "latency_ms": 140
+      },
+      {
+        "step_number": 2,
+        "action": "call tool",
+        "tool_name": "document_search",
+        "tool_input": "leave policy",
+        "tool_output": "Policy result 1",
+        "status": "completed",
+        "latency_ms": 280
+      },
+      {
+        "step_number": 3,
+        "action": "call tool",
+        "tool_name": "document_search",
+        "tool_input": "leave policy clarification",
+        "tool_output": "Policy result 2",
+        "status": "completed",
+        "latency_ms": 290
+      },
+      {
+        "step_number": 4,
+        "action": "respond",
+        "status": "completed",
+        "latency_ms": 190
+      }
+    ],
+    "retry_count": 1,
+    "tool_errors": 0,
+    "total_latency_ms": 900,
+    "input_tokens": 55,
+    "output_tokens": 28,
+    "metadata": {
+      "category": "document-qa"
+    }
+  }
+]

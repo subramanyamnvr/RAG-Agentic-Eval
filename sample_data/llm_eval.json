@@ -1,1 +1,38 @@
-
+[
+  {
+    "question": "What is the capital of France?",
+    "expected_answer": "Paris is the capital of France.",
+    "actual_answer": "Paris is the capital of France.",
+    "model": "gpt-4.1-mini",
+    "latency_ms": 820,
+    "input_tokens": 18,
+    "output_tokens": 12,
+    "metadata": {
+      "topic": "geography"
+    }
+  },
+  {
+    "question": "What does CPU stand for?",
+    "expected_answer": "CPU stands for Central Processing Unit.",
+    "actual_answer": "CPU means Central Processing Unit.",
+    "model": "gpt-4.1-mini",
+    "latency_ms": 760,
+    "input_tokens": 14,
+    "output_tokens": 10,
+    "metadata": {
+      "topic": "technology"
+    }
+  },
+  {
+    "question": "Name one benefit of exercise.",
+    "expected_answer": "Exercise can improve physical health.",
+    "actual_answer": "Exercise improves physical health and energy levels.",
+    "model": "gpt-4.1-mini",
+    "latency_ms": 910,
+    "input_tokens": 16,
+    "output_tokens": 14,
+    "metadata": {
+      "topic": "health"
+    }
+  }
+]
